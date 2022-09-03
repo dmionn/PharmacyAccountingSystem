@@ -12,5 +12,6 @@ namespace PharmacyAccountingSystem
         public int ProductId { get; set; }
         public int WarehouseId { get; set; }
         public int Number { get; set; }
+        public string Name{ get; set; }
     }
 }

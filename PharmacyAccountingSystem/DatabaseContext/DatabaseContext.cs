@@ -33,7 +33,8 @@ namespace PharmacyAccountingSystem
 
         private void dosmth()
         {
-
+            //_batchOperationsProvider.AddBatch(new Batch { Name = "партия 1", Number = 100, ProductId = 4, WarehouseId = 3 });
+            //_batchOperationsProvider.DeleteBatch(new Batch { Name = "партия 1", Number = 100, ProductId = 4, WarehouseId = 3 });
         }
 
         private string LoadConnectionString(string id = "Default")

@@ -13,18 +13,26 @@ namespace PharmacyAccountingSystem
         {
         }
 
-        public void AddWarehouse(Batch batch)
+        public void AddBatch(Batch batch)
         {
-            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}INSERT INTO Batches (ProductId, WarehouseId, Number)" +
-                $" VALUES ({batch.ProductId}, {batch.WarehouseId}, {batch.Number});");
+            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}INSERT INTO Batches (ProductId, WarehouseId, Number, Name)" +
+                $" VALUES ({batch.ProductId}, {batch.WarehouseId}, {batch.Number}, '{batch.Name}');");
 
             ExecuteCommand(command);
         }
 
-        public void DeleteWarehouse(Batch batch)
+        public void DeleteBatch(Batch batch)
         {
-            //using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}DELETE FROM Batches WHERE Name='{batch.}';");
-            //ExecuteCommand(command);
+            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}DELETE FROM Batches WHERE Name='{batch.Name}';");
+            ExecuteCommand(command);
+        }
+
+        protected override void HandleFailedCommand(Exception ex)
+        {
+            if (ex.Message == "")
+            {
+                MessagesLogger.ErrorMessage("Партия с таким наименованием уже существует");
+            }
         }
     }
 }

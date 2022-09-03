@@ -25,5 +25,13 @@ namespace PharmacyAccountingSystem
             using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}DELETE FROM Warehouses WHERE Name='{warehouse.Name}';");
             ExecuteCommand(command);
         }
+
+        protected override void HandleFailedCommand(Exception ex)
+        {
+            if (ex.Message == "")
+            {
+                MessagesLogger.ErrorMessage("Склад с таким наименованием уже существует");
+            }
+        }
     }
 }
