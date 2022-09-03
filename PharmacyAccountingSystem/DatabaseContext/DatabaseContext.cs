@@ -12,31 +12,28 @@ namespace PharmacyAccountingSystem
 {
     internal class DatabaseContext
     {
+        private readonly SQLiteConnection _connection;
+
+        private readonly ProductOperationsProvider _productOperationsProvider;
+        private readonly PharmacyOperationsProvider _pharmacyOperationsProvider;
+        private readonly WarehouseOperationsProvider _warehouseOperationsProvider;
+        private readonly BatchOperationsProvider _batchOperationsProvider;
 
         public DatabaseContext()
         {
+            _connection = new SQLiteConnection(LoadConnectionString());
+
+            _productOperationsProvider = new ProductOperationsProvider(_connection);
+            _pharmacyOperationsProvider = new PharmacyOperationsProvider(_connection);
+            _warehouseOperationsProvider = new WarehouseOperationsProvider(_connection);
+            _batchOperationsProvider = new BatchOperationsProvider(_connection);
+
             dosmth();
         }
 
         private void dosmth()
         {
-            SQLiteConnection sqlite_conn;
-            sqlite_conn = new SQLiteConnection(LoadConnectionString());
-            try
-            {
-                sqlite_conn.Open();
 
-                SQLiteCommand sqlite_cmd;
-                sqlite_cmd = sqlite_conn.CreateCommand();
-                sqlite_cmd.CommandText = "INSERT INTO Products (Name) VALUES ('новый продукт3');";
-                sqlite_cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            sqlite_conn.Close();
         }
 
         private string LoadConnectionString(string id = "Default")
