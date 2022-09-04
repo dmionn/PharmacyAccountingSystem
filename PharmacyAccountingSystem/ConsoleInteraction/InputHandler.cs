@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PharmacyAccountingSystem
+﻿namespace PharmacyAccountingSystem
 {
     internal static class InputHandler
     {
-        private static readonly Dictionary<CommandType, string[]> _commandNamesMapper =
+        private static readonly Dictionary<CommandType, string[]> _commandNamesMap =
             new()
             {
                 [CommandType.CreateProduct] = new[] { "создать товар", "ст" },
@@ -23,7 +17,27 @@ namespace PharmacyAccountingSystem
                 [CommandType.CreateBatch] = new[] { "создать партию", "сп" },
                 [CommandType.DeleteBatch] = new[] { "удалить партию", "уп" },
 
+                [CommandType.ShowProducts] = new[] { "показать товары", "пт" },
+
                 [CommandType.Exit] = new[] { "выход", "в" },
+            };
+
+        private static readonly Dictionary<CommandType, string[]> _commandParameterNamesMap =
+            new()
+            {
+                [CommandType.CreateProduct] = new[] { "Name" },
+                [CommandType.DeleteProduct] = new[] { "Name" },
+
+                [CommandType.CreatePharmacy] = new[] { "Name", "Address", "PhoneNumber" },
+                [CommandType.DeletePharmacy] = new[] { "Name" },
+
+                [CommandType.CreateWarehouse] = new[] { "Name", "PharmacyName" },
+                [CommandType.DeleteWarehouse] = new[] { "Name" },
+
+                [CommandType.CreateBatch] = new[] { "Name", "WarehouseName", "ProductName", "Number" },
+                [CommandType.DeleteBatch] = new[] { "Name" },
+
+                [CommandType.ShowProducts] = new[] { "PharmacyName" },
             };
 
         public static CommandInfo ParseInputString(string input)
@@ -43,25 +57,113 @@ namespace PharmacyAccountingSystem
 
         private static void GetCommandType(string input, CommandInfo commandInfo)
         {
-            commandInfo.Command = _commandNamesMapper.FirstOrDefault(kvp => kvp.Value.Any(v => input.StartsWith(v))).Key;
+            commandInfo.Command = _commandNamesMap.FirstOrDefault(kvp => kvp.Value.Any(v => input.StartsWith(v))).Key;
         }
 
         private static void GetParameters(string input, CommandInfo commandInfo)
         {
-            var allCommandFormats = _commandNamesMapper.FirstOrDefault(kvp => kvp.Value.Any(v => input.StartsWith(v))).Value;
+            var allCommandFormats = _commandNamesMap.FirstOrDefault(kvp => kvp.Value.Any(v => input.StartsWith(v))).Value;
             var currentCommandFormat = allCommandFormats.First(cf => input.StartsWith(cf));
 
             var parametersString = input.Remove(0, currentCommandFormat.Length).Trim();
-            commandInfo.Parameters = ParseParameters(parametersString);
+            ParseParameters(parametersString, commandInfo);
         }
 
-        private static Dictionary<string, string> ParseParameters(string parametersString)
+        private static void ParseParameters(string parametersString, CommandInfo commandInfo)
         {
-            var result = new Dictionary<string, string>();
+            var paramNamesList = _commandParameterNamesMap[commandInfo.Command];
 
+            bool notEnoughParameters() => parametersString.Split(' ').Length < paramNamesList.Length;
+            bool containsQuotes() => parametersString.Any(i => i == '"');
+            bool wrongQuotesNumber() => containsQuotes() && (parametersString.Count(i => i == '"') % 2 != 0);
 
+            if (string.IsNullOrEmpty(parametersString) || notEnoughParameters() || wrongQuotesNumber())
+            {
+                commandInfo.Command = CommandType.Unknown;
+            }
+            else
+            {
+                if (containsQuotes())
+                {
+                    ParseParametersWithQuotes(parametersString, commandInfo, paramNamesList);
+                }
+                else
+                {
+                    ParseParametersWithoutQuotes(parametersString, commandInfo, paramNamesList);
+                }
+            }
+        }
 
-            return result;
+        private static void ParseParametersWithQuotes(string parametersString, CommandInfo commandInfo, string[] paramNamesList)
+        {
+            var paramValuesList = new List<string>();
+            var parameterValue = new List<char>();
+
+            void addNewParameter()
+            {
+                paramValuesList.Add(new string(parameterValue.ToArray()).Trim());
+                parameterValue.Clear();
+            }
+
+            bool isLastChar(int index) => ++index == parametersString.Length;
+            bool nextCharInList(int index, char[] charList) => charList.Contains(parametersString[++index]);
+
+            var parameterWithQuotes = false;
+
+            for (int i = 0; i < parametersString.Length; i++)
+            {
+                if (parametersString[i] == '"')
+                {
+                    parameterWithQuotes = !parameterWithQuotes;
+                    continue;
+                }
+
+                parameterValue.Add(parametersString[i]);
+                if (parameterWithQuotes)
+                {
+                    if (isLastChar(i))
+                    {
+                        commandInfo.Command = CommandType.Unknown;
+                        break;
+                    }
+
+                    if (nextCharInList(i, new[] { '"' }))
+                    {
+                        addNewParameter();
+                    }
+                }
+                else if (isLastChar(i) || nextCharInList(i, new[] { ' ', '"' }))
+                {
+                    addNewParameter();
+                }
+            }
+
+            if (paramValuesList.Count() != paramNamesList.Length)
+            {
+                commandInfo.Command = CommandType.Unknown;
+            }
+            else
+            {
+                FillParametersList(paramNamesList, paramValuesList.ToArray(), commandInfo);
+            }
+        }
+
+        private static void ParseParametersWithoutQuotes(string parametersString, CommandInfo commandInfo, string[] paramNamesList)
+        {
+            var paramValuesList = parametersString.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (paramValuesList.Length != paramNamesList.Length)
+            {
+                commandInfo.Command = CommandType.Unknown;
+            }
+            else
+            {
+                FillParametersList(paramNamesList, paramValuesList, commandInfo);
+            }
+        }
+
+        private static void FillParametersList(string[] paramNamesList, string[] paramValuesList, CommandInfo commandInfo)
+        {
+            paramNamesList.Zip(paramValuesList).ToList().ForEach(i => commandInfo.Parameters.Add(i.First, i.Second));
         }
     }
 }

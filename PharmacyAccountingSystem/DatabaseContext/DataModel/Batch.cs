@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PharmacyAccountingSystem
+﻿namespace PharmacyAccountingSystem
 {
     internal class Batch
     {
@@ -12,6 +6,6 @@ namespace PharmacyAccountingSystem
         public int ProductId { get; set; }
         public int WarehouseId { get; set; }
         public int Number { get; set; }
-        public string Name{ get; set; }
+        public string? Name{ get; set; }
     }
 }
