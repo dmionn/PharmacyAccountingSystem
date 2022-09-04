@@ -13,17 +13,17 @@ namespace PharmacyAccountingSystem
         {
         }
 
-        public void AddWarehouse(Warehouse warehouse)
+        public bool AddWarehouse(Warehouse warehouse)
         {
             using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}INSERT INTO Warehouses (PharmacyId, Name) VALUES({warehouse.PharmacyId}, '{warehouse.Name}');");
 
-            ExecuteCommand(command);
+            return ExecuteCommand(command);
         }
 
-        public void DeleteWarehouse(Warehouse warehouse)
+        public bool DeleteWarehouse(Warehouse warehouse)
         {
             using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}DELETE FROM Warehouses WHERE Name='{warehouse.Name}';");
-            ExecuteCommand(command);
+            return ExecuteCommand(command);
         }
 
         protected override void HandleFailedCommand(Exception ex)

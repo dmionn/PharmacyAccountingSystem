@@ -7,6 +7,7 @@
             ShowDescription();
 
             var dbContext = new DatabaseContext();
+            var commandsController = new CommandsController(dbContext);
 
             while (true)
             {
@@ -20,6 +21,10 @@
                 else if(commandInfo.Command == CommandType.Exit)
                 {
                     break;
+                }
+                else if (commandsController.RunCommand(commandInfo))
+                {
+                    MessagesLogger.CommandСompletedMessage();
                 }
             }
 

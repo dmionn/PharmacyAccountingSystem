@@ -27,15 +27,19 @@ namespace PharmacyAccountingSystem
             _pharmacyOperationsProvider = new PharmacyOperationsProvider(_connection);
             _warehouseOperationsProvider = new WarehouseOperationsProvider(_connection);
             _batchOperationsProvider = new BatchOperationsProvider(_connection);
-
-            dosmth();
         }
 
-        private void dosmth()
-        {
-            //_batchOperationsProvider.AddBatch(new Batch { Name = "партия 1", Number = 100, ProductId = 4, WarehouseId = 3 });
-            //_batchOperationsProvider.DeleteBatch(new Batch { Name = "партия 1", Number = 100, ProductId = 4, WarehouseId = 3 });
-        }
+        public bool AddProduct(Product product) => _productOperationsProvider.AddProduct(product);
+        public bool DeleteProduct(Product product) => _productOperationsProvider.DeleteProduct(product);
+
+        public bool AddPharmacy(Pharmacy pharmacy) => _pharmacyOperationsProvider.AddPharmacy(pharmacy);
+        public bool DeletePharmacy(Pharmacy pharmacy) => _pharmacyOperationsProvider.DeletePharmacy(pharmacy);
+
+        public bool AddWarehouse(Warehouse warehouse) => _warehouseOperationsProvider.AddWarehouse(warehouse);
+        public bool DeleteWarehouse(Warehouse warehouse) => _warehouseOperationsProvider.DeleteWarehouse(warehouse);
+
+        public bool AddBatch(Batch batch) => _batchOperationsProvider.AddBatch(batch);
+        public bool DeleteBatch(Batch batch) => _batchOperationsProvider.DeleteBatch(batch);
 
         private string LoadConnectionString(string id = "Default")
             => ConfigurationManager.ConnectionStrings[id].ConnectionString;

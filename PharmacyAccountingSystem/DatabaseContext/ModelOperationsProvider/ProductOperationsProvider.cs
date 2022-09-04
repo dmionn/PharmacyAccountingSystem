@@ -16,16 +16,16 @@ namespace PharmacyAccountingSystem
         {
         }
 
-        public void AddProduct(Product product)
+        public bool AddProduct(Product product)
         {
             using var command = new SQLiteCommand($"INSERT INTO Products (Name) VALUES ('{product.Name}')");
-            ExecuteCommand(command);
+            return ExecuteCommand(command);
         }
 
-        public void DeleteProduct(Product product)
+        public bool DeleteProduct(Product product)
         {
             using var command = new SQLiteCommand($"DELETE FROM Products WHERE Name='{product.Name}'");
-            ExecuteCommand(command);
+            return ExecuteCommand(command);
         }
 
         protected override void HandleFailedCommand(Exception ex)

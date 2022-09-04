@@ -88,8 +88,9 @@ namespace PharmacyAccountingSystem
             return record;
         }
 
-        protected void ExecuteCommand(SQLiteCommand command)
+        protected bool ExecuteCommand(SQLiteCommand command)
         {
+            var completed = true;
             command.Connection = _connection;
             _connection.Open();
 
@@ -99,12 +100,15 @@ namespace PharmacyAccountingSystem
             }
             catch (Exception ex)
             {
+                completed = false;
                 HandleFailedCommand(ex);
             }
             finally
             {
                 _connection.Close();
             }
+
+            return completed;
         }
     }
 }

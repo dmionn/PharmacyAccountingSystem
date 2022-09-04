@@ -25,17 +25,17 @@
         private static readonly Dictionary<CommandType, string[]> _commandParameterNamesMap =
             new()
             {
-                [CommandType.CreateProduct] = new[] { "Name" },
-                [CommandType.DeleteProduct] = new[] { "Name" },
+                [CommandType.CreateProduct] = new[] { nameof(Product.Name) },
+                [CommandType.DeleteProduct] = new[] { nameof(Product.Name) },
 
-                [CommandType.CreatePharmacy] = new[] { "Name", "Address", "PhoneNumber" },
-                [CommandType.DeletePharmacy] = new[] { "Name" },
+                [CommandType.CreatePharmacy] = new[] { nameof(Pharmacy.Name), nameof(Pharmacy.Address), nameof(Pharmacy.PhoneNumber) },
+                [CommandType.DeletePharmacy] = new[] { nameof(Pharmacy.Name) },
 
-                [CommandType.CreateWarehouse] = new[] { "Name", "PharmacyName" },
-                [CommandType.DeleteWarehouse] = new[] { "Name" },
+                [CommandType.CreateWarehouse] = new[] { nameof(Warehouse.Name), nameof(Warehouse.PharmacyName) },
+                [CommandType.DeleteWarehouse] = new[] { nameof(Warehouse.Name) },
 
-                [CommandType.CreateBatch] = new[] { "Name", "WarehouseName", "ProductName", "Number" },
-                [CommandType.DeleteBatch] = new[] { "Name" },
+                [CommandType.CreateBatch] = new[] { nameof(Batch.Name), nameof(Batch.WarehouseName), nameof(Batch.ProductName), nameof(Batch.Number) },
+                [CommandType.DeleteBatch] = new[] { nameof(Batch.Name) },
 
                 [CommandType.ShowProducts] = new[] { "PharmacyName" },
             };

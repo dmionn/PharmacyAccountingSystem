@@ -13,18 +13,18 @@ namespace PharmacyAccountingSystem
         {
         }
 
-        public void AddBatch(Batch batch)
+        public bool AddBatch(Batch batch)
         {
             using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}INSERT INTO Batches (ProductId, WarehouseId, Number, Name)" +
                 $" VALUES ({batch.ProductId}, {batch.WarehouseId}, {batch.Number}, '{batch.Name}');");
 
-            ExecuteCommand(command);
+            return ExecuteCommand(command);
         }
 
-        public void DeleteBatch(Batch batch)
+        public bool DeleteBatch(Batch batch)
         {
             using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}DELETE FROM Batches WHERE Name='{batch.Name}';");
-            ExecuteCommand(command);
+            return ExecuteCommand(command);
         }
 
         protected override void HandleFailedCommand(Exception ex)

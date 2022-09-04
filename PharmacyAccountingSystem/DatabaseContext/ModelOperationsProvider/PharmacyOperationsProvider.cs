@@ -15,18 +15,18 @@ namespace PharmacyAccountingSystem
         {
         }
 
-        public void AddPharmacy(Pharmacy pharmacy)
+        public bool AddPharmacy(Pharmacy pharmacy)
         {
             using var command = new SQLiteCommand($"INSERT INTO Pharmacies (Name, Address, PhoneNumber)" +
                 $" VALUES ('{pharmacy.Name}', '{pharmacy.Address}', '{pharmacy.PhoneNumber}')");
 
-            ExecuteCommand(command);
+            return ExecuteCommand(command);
         }
 
-        public void DeletePharmacy(Pharmacy pharmacy)
+        public bool DeletePharmacy(Pharmacy pharmacy)
         {
             using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}DELETE FROM Pharmacies WHERE Name='{pharmacy.Name}';");
-            ExecuteCommand(command);
+            return ExecuteCommand(command);
         }
 
         protected override void HandleFailedCommand(Exception ex)

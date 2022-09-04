@@ -7,5 +7,7 @@
         public int WarehouseId { get; set; }
         public int Number { get; set; }
         public string? Name{ get; set; }
+        public string? WarehouseName { get; set; }
+        public string? ProductName { get; set; }
     }
 }
