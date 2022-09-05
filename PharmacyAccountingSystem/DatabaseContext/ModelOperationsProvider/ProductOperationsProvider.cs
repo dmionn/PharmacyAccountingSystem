@@ -39,6 +39,13 @@ namespace PharmacyAccountingSystem
             return GetRecord(command);
         }
 
+        public IEnumerable<Product> GetProductsByIdList(IEnumerable<string> idList)
+        {
+            var formattedIdList = string.Join(", ", idList.Select(i => $"'{i}'"));
+            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}SELECT * FROM Products WHERE ProductUserId in ({formattedIdList});");
+            return GetRecords(command);
+        }
+
         protected override void HandleFailedCommand(Exception ex)
         {
             if (ex.Message == NON_UNIQUE_PRODUCT_ID)

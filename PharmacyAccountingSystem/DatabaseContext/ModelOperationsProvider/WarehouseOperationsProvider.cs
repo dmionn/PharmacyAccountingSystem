@@ -41,6 +41,11 @@ namespace PharmacyAccountingSystem
             using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}SELECT * FROM Warehouses WHERE WarehouseUserId='{id}';");
             return GetRecord(command);
         }
+        public IEnumerable<Warehouse> GetWarehousesByPharmacyId(string pharmacyId)
+        {
+            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}SELECT * FROM Warehouses WHERE PharmacyUserId='{pharmacyId}';");
+            return GetRecords(command);
+        }
 
         protected override void HandleFailedCommand(Exception ex)
         {

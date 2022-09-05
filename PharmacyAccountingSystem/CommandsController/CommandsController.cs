@@ -1,4 +1,6 @@
-﻿namespace PharmacyAccountingSystem
+﻿using System.Text;
+
+namespace PharmacyAccountingSystem
 {
     internal class CommandsController
     {
@@ -154,9 +156,61 @@
 
         private bool ShowProducts(Dictionary<string, string> parameters)
         {
+            var id = parameters[nameof(Pharmacy.PharmacyUserId)];
+            if (_databaseContext.GetPharmacyById(id) == null)
+            {
+                MessagesLogger.ErrorMessage("Аптеки с данным id не существует");
+                return false;
+            }
 
+            var warehouses = _databaseContext.GetWarehousesByPharmacyId(id);
+            if (!(warehouses?.Any() ?? false))
+            {
+                MessagesLogger.ErrorMessage("У данной аптеки нет складов");
+                return false;
+            }
+            else
+            {
+                var batchesInWarehouses = new Dictionary<Warehouse, IEnumerable<Batch>>();
+                foreach (var warehouse in warehouses)
+                {
+                    var batches = _databaseContext.GetBatchesByWarehouseId(warehouse.WarehouseUserId!);
+                    batchesInWarehouses.Add(warehouse, batches);
+                }
+
+                var products = _databaseContext.GetProductsByIdList(batchesInWarehouses.SelectMany(b => b.Value).Select(b => b.ProductUserId!));
+                ShowProductsList(batchesInWarehouses, products);
+            }
 
             return true;
+        }
+
+        private static void ShowProductsList(Dictionary<Warehouse, IEnumerable<Batch>> batchesInWarehouses, IEnumerable<Product> products)
+        {
+            var productsTotal = new StringBuilder("Всего:");
+            productsTotal.AppendLine();
+
+            foreach (var product in products)
+            {
+                var p = $"{product.Name}: {batchesInWarehouses.Values.SelectMany(bl => bl).Where(b => b.ProductId == product.Id).Select(b => b.Number).Sum()}";
+                productsTotal.AppendLine(p);
+            }
+
+            MessagesLogger.CustomMessage(productsTotal.ToString());
+
+            var productsInWarehouse = new StringBuilder();
+            foreach (var warehouse in batchesInWarehouses)
+            {
+                productsInWarehouse.AppendLine($"В складе '{warehouse.Key.Name}' ({warehouse.Key.WarehouseUserId}):");
+                foreach (var product in products)
+                {
+                    var p = $"{product.Name} ({product.ProductUserId}): {warehouse.Value.Where(b => b.ProductId == product.Id).Select(b => b.Number).Sum()}";
+                    productsInWarehouse.AppendLine(p);
+                }
+
+                MessagesLogger.CustomMessage(productsInWarehouse.ToString());
+                productsInWarehouse.Clear();
+            }
         }
     }
 }

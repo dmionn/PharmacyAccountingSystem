@@ -25,6 +25,7 @@ namespace PharmacyAccountingSystem
         public bool AddProduct(Product product) => _productOperationsProvider.AddProduct(product);
         public bool DeleteProduct(Product product) => _productOperationsProvider.DeleteProduct(product);
         public Product? GetProductById(string id) => _productOperationsProvider.GetProductById(id);
+        public IEnumerable<Product> GetProductsByIdList(IEnumerable<string> idList) => _productOperationsProvider.GetProductsByIdList(idList);
 
         public bool AddPharmacy(Pharmacy pharmacy) => _pharmacyOperationsProvider.AddPharmacy(pharmacy);
         public bool DeletePharmacy(Pharmacy pharmacy) => _pharmacyOperationsProvider.DeletePharmacy(pharmacy);
@@ -33,10 +34,12 @@ namespace PharmacyAccountingSystem
         public bool AddWarehouse(Warehouse warehouse) => _warehouseOperationsProvider.AddWarehouse(warehouse);
         public bool DeleteWarehouse(Warehouse warehouse) => _warehouseOperationsProvider.DeleteWarehouse(warehouse);
         public Warehouse? GetWarehouseById(string id) => _warehouseOperationsProvider.GetWarehouseById(id);
+        public IEnumerable<Warehouse> GetWarehousesByPharmacyId(string pharmacyId) => _warehouseOperationsProvider.GetWarehousesByPharmacyId(pharmacyId);
 
         public bool AddBatch(Batch batch) => _batchOperationsProvider.AddBatch(batch);
         public bool DeleteBatch(Batch batch) => _batchOperationsProvider.DeleteBatch(batch);
         public Batch? GetBatchById(string id) => _batchOperationsProvider.GetBatchById(id);
+        public IEnumerable<Batch> GetBatchesByWarehouseId(string warehouseId) => _batchOperationsProvider.GetBatchesByWarehouseId(warehouseId);
 
         private static string LoadConnectionString(string id = "Default")
             => ConfigurationManager.ConnectionStrings[id].ConnectionString;

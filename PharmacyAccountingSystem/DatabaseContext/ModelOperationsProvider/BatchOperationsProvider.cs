@@ -44,6 +44,12 @@ namespace PharmacyAccountingSystem
             return GetRecord(command);
         }
 
+        public IEnumerable<Batch> GetBatchesByWarehouseId(string warehouseId)
+        {
+            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}SELECT * FROM Batches WHERE WarehouseUserId='{warehouseId}';");
+            return GetRecords(command);
+        }
+
         protected override void HandleFailedCommand(Exception ex)
         {
             if (ex.Message == NON_UNIQUE_BATCH_ID)
