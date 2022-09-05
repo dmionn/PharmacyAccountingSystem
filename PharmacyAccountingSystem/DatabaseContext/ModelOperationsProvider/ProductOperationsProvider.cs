@@ -4,7 +4,7 @@ namespace PharmacyAccountingSystem
 {
     internal class ProductOperationsProvider : ModelOperationsProvider<Product>
     {
-        private const string NON_UNIQUE_PRODUCT = "constraint failed\r\nUNIQUE constraint failed: Products.Name";
+        private const string NON_UNIQUE_PRODUCT_ID = "constraint failed\r\nUNIQUE constraint failed: Products.ProductUserId";
 
         public ProductOperationsProvider(SQLiteConnection connection) : base(connection)
         {
@@ -15,33 +15,35 @@ namespace PharmacyAccountingSystem
             return new Product
             {
                 Id = reader.GetInt32(0),
-                Name = reader.GetString(1)
+                Name = reader.GetString(1),
+                ProductUserId = reader.GetString(2)
             };
         }
 
         public bool AddProduct(Product product)
         {
-            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}INSERT INTO Products (Name) VALUES ('{product.Name}');");
+            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}INSERT INTO Products (ProductUserId, Name)" +
+                $" VALUES ('{product.ProductUserId}', '{product.Name}');");
             return ExecuteCommand(command);
         }
 
         public bool DeleteProduct(Product product)
         {
-            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}DELETE FROM Products WHERE Name='{product.Name}';");
+            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}DELETE FROM Products WHERE ProductUserId='{product.ProductUserId}';");
             return ExecuteCommand(command);
         }
 
-        public Product? GetProductByName(string name)
+        public Product? GetProductById(string id)
         {
-            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}SELECT * FROM Products WHERE Name='{name}';");
+            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}SELECT * FROM Products WHERE ProductUserId='{id}';");
             return GetRecord(command);
         }
 
         protected override void HandleFailedCommand(Exception ex)
         {
-            if (ex.Message == NON_UNIQUE_PRODUCT)
+            if (ex.Message == NON_UNIQUE_PRODUCT_ID)
             {
-                MessagesLogger.ErrorMessage("Товар с таким наименованием уже существует");
+                MessagesLogger.ErrorMessage("Товар с таким id уже существует");
             }
         }
     }

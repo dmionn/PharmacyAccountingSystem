@@ -24,17 +24,22 @@
 
         private bool CreateProduct(Dictionary<string, string> parameters) 
         { 
-            return _databaseContext.AddProduct(new Product { Name = parameters[nameof(Product.Name)] }); 
+            return _databaseContext.AddProduct(
+                new Product 
+                { 
+                    ProductUserId = parameters[nameof(Product.ProductUserId)],
+                    Name = parameters[nameof(Product.Name)] 
+                }); 
         }
         private bool DeleteProduct(Dictionary<string, string> parameters)
         {
-            if (_databaseContext.GetProductByName(parameters[nameof(Product.Name)]) == null)
+            if (_databaseContext.GetProductById(parameters[nameof(Product.ProductUserId)]) == null)
             {
-                MessagesLogger.ErrorMessage("Товара с данным наименованием не существует");
+                MessagesLogger.ErrorMessage("Товара с данным id не существует");
                 return false;
             }
             
-            return _databaseContext.DeleteProduct(new Product { Name = parameters[nameof(Product.Name)] });
+            return _databaseContext.DeleteProduct(new Product { ProductUserId = parameters[nameof(Product.ProductUserId)] });
         }
 
         private bool CreatePharmacy(Dictionary<string, string> parameters)
@@ -45,30 +50,31 @@
                     Name = parameters[nameof(Pharmacy.Name)],
                     Address = parameters[nameof(Pharmacy.Address)],
                     PhoneNumber = parameters[nameof(Pharmacy.PhoneNumber)],
+                    PharmacyUserId = parameters[nameof(Pharmacy.PharmacyUserId)],
                 });
         }
 
         private bool DeletePharmacy(Dictionary<string, string> parameters)
         {
-            if (_databaseContext.GetPharmacyByName(parameters[nameof(Pharmacy.Name)]) == null)
+            if (_databaseContext.GetPharmacyById(parameters[nameof(Pharmacy.PharmacyUserId)]) == null)
             {
-                MessagesLogger.ErrorMessage("Аптеки с данным наименованием не существует");
+                MessagesLogger.ErrorMessage("Аптеки с данным id не существует");
                 return false;
             }
 
             return _databaseContext.DeletePharmacy(
                 new Pharmacy
                 {
-                    Name = parameters[nameof(Pharmacy.Name)],
+                    PharmacyUserId = parameters[nameof(Pharmacy.PharmacyUserId)],
                 });
         }
 
         private bool CreateWarehouse(Dictionary<string, string> parameters)
         {
-            var pharmacy = _databaseContext.GetPharmacyByName(parameters[nameof(Warehouse.PharmacyName)]);
+            var pharmacy = _databaseContext.GetPharmacyById(parameters[nameof(Warehouse.PharmacyUserId)]);
             if (pharmacy == null)
             {
-                MessagesLogger.ErrorMessage("Аптеки с данным наименованием не существует");
+                MessagesLogger.ErrorMessage("Аптеки с данным id не существует");
                 return false;
             }
 
@@ -76,23 +82,24 @@
                 new Warehouse
                 {
                     Name = parameters[nameof(Warehouse.Name)],
-                    PharmacyName = parameters[nameof(Warehouse.PharmacyName)],
+                    WarehouseUserId = parameters[nameof(Warehouse.WarehouseUserId)],
                     PharmacyId = pharmacy.Id,
+                    PharmacyUserId = pharmacy.PharmacyUserId
                 });
         }
 
         private bool DeleteWarehouse(Dictionary<string, string> parameters)
         {
-            if (_databaseContext.GetWarehouseByName(parameters[nameof(Warehouse.Name)]) == null)
+            if (_databaseContext.GetWarehouseById(parameters[nameof(Warehouse.WarehouseUserId)]) == null)
             {
-                MessagesLogger.ErrorMessage("Склада с данным наименованием не существует");
+                MessagesLogger.ErrorMessage("Склада с данным id не существует");
                 return false;
             }
 
             return _databaseContext.DeleteWarehouse(
                 new Warehouse
                 {
-                    Name = parameters[nameof(Warehouse.Name)],
+                    WarehouseUserId = parameters[nameof(Warehouse.WarehouseUserId)],
                 });
         }
 
@@ -104,24 +111,26 @@
                 return false;
             }
 
-            var product = _databaseContext.GetProductByName(parameters[nameof(Batch.ProductName)]);
+            var product = _databaseContext.GetProductById(parameters[nameof(Batch.ProductUserId)]);
             if (product == null)
             {
-                MessagesLogger.ErrorMessage("Товара с данным наименованием не существует");
+                MessagesLogger.ErrorMessage("Товара с данным id не существует");
                 return false;
             }
 
-            var warehouse = _databaseContext.GetWarehouseByName(parameters[nameof(Batch.WarehouseName)]);
+            var warehouse = _databaseContext.GetWarehouseById(parameters[nameof(Batch.WarehouseUserId)]);
             if (warehouse == null)
             {
-                MessagesLogger.ErrorMessage("Склада с данным наименованием не существует");
+                MessagesLogger.ErrorMessage("Склада с данным id не существует");
                 return false;
             }
 
             return _databaseContext.AddBatch(
                 new Batch
                 {
-                    Name = parameters[nameof(Batch.Name)],
+                    ProductUserId = parameters[nameof(Batch.ProductUserId)],
+                    WarehouseUserId = parameters[nameof(Batch.WarehouseUserId)],
+                    BatchUserId = parameters[nameof(Batch.BatchUserId)],
                     Number = number,
                     WarehouseId = warehouse.Id,
                     ProductId = product.Id
@@ -130,16 +139,16 @@
 
         private bool DeleteBatch(Dictionary<string, string> parameters)
         {
-            if (_databaseContext.GetBatchByName(parameters[nameof(Batch.Name)]) == null)
+            if (_databaseContext.GetBatchById(parameters[nameof(Batch.BatchUserId)]) == null)
             {
-                MessagesLogger.ErrorMessage("Партии с данным наименованием не существует");
+                MessagesLogger.ErrorMessage("Партии с данным id не существует");
                 return false;
             }
 
             return _databaseContext.DeleteBatch(
                 new Batch
                 {
-                    Name = parameters[nameof(Batch.Name)],
+                    BatchUserId = parameters[nameof(Batch.BatchUserId)],
                 });
         }
 

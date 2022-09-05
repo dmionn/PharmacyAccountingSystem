@@ -4,7 +4,7 @@ namespace PharmacyAccountingSystem
 {
     internal class BatchOperationsProvider : ModelOperationsProvider<Batch>
     {
-        private const string NON_UNIQUE_BATCH_NAME = "constraint failed\r\nUNIQUE constraint failed: Batches.Name";
+        private const string NON_UNIQUE_BATCH_ID = "constraint failed\r\nUNIQUE constraint failed: Batches.BatchUserId";
 
         public BatchOperationsProvider(SQLiteConnection connection) : base(connection)
         {
@@ -18,35 +18,37 @@ namespace PharmacyAccountingSystem
                 ProductId = reader.GetInt32(1),
                 WarehouseId = reader.GetInt32(2),
                 Number = reader.GetInt32(3),
-                Name = reader.GetString(4),
+                BatchUserId = reader.GetString(4),
+                ProductUserId = reader.GetString(5),
+                WarehouseUserId = reader.GetString(6),
             };
         }
 
         public bool AddBatch(Batch batch)
         {
-            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}INSERT INTO Batches (ProductId, WarehouseId, Number, Name)" +
-                $" VALUES ({batch.ProductId}, {batch.WarehouseId}, {batch.Number}, '{batch.Name}');");
+            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}INSERT INTO Batches (ProductId, WarehouseId, Number, BatchUserId, ProductUserId, WarehouseUserId)" +
+                $" VALUES ({batch.ProductId}, {batch.WarehouseId}, {batch.Number}, '{batch.BatchUserId}', '{batch.ProductUserId}', '{batch.WarehouseUserId}');");
 
             return ExecuteCommand(command);
         }
 
         public bool DeleteBatch(Batch batch)
         {
-            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}DELETE FROM Batches WHERE Name='{batch.Name}';");
+            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}DELETE FROM Batches WHERE BatchUserId='{batch.BatchUserId}';");
             return ExecuteCommand(command);
         }
 
-        public Batch? GetBatchByName(string name)
+        public Batch? GetBatchById(string id)
         {
-            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}SELECT * FROM Batches WHERE Name='{name}';");
+            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}SELECT * FROM Batches WHERE BatchUserId='{id}';");
             return GetRecord(command);
         }
 
         protected override void HandleFailedCommand(Exception ex)
         {
-            if (ex.Message == NON_UNIQUE_BATCH_NAME)
+            if (ex.Message == NON_UNIQUE_BATCH_ID)
             {
-                MessagesLogger.ErrorMessage("Партия с таким наименованием уже существует");
+                MessagesLogger.ErrorMessage("Партия с таким id уже существует");
             }
         }
     }

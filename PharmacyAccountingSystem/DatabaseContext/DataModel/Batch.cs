@@ -6,8 +6,8 @@
         public int ProductId { get; set; }
         public int WarehouseId { get; set; }
         public int Number { get; set; }
-        public string? Name{ get; set; }
-        public string? WarehouseName { get; set; }
-        public string? ProductName { get; set; }
+        public string? BatchUserId { get; set; }
+        public string? ProductUserId { get; set; }
+        public string? WarehouseUserId { get; set; }
     }
 }

@@ -25,19 +25,19 @@
         private static readonly Dictionary<CommandType, string[]> _commandParameterNamesMap =
             new()
             {
-                [CommandType.CreateProduct] = new[] { nameof(Product.Name) },
-                [CommandType.DeleteProduct] = new[] { nameof(Product.Name) },
+                [CommandType.CreateProduct] = new[] { nameof(Product.ProductUserId), nameof(Product.Name) },
+                [CommandType.DeleteProduct] = new[] { nameof(Product.ProductUserId) },
 
-                [CommandType.CreatePharmacy] = new[] { nameof(Pharmacy.Name), nameof(Pharmacy.Address), nameof(Pharmacy.PhoneNumber) },
-                [CommandType.DeletePharmacy] = new[] { nameof(Pharmacy.Name) },
+                [CommandType.CreatePharmacy] = new[] { nameof(Pharmacy.PharmacyUserId), nameof(Pharmacy.Name), nameof(Pharmacy.Address), nameof(Pharmacy.PhoneNumber) },
+                [CommandType.DeletePharmacy] = new[] { nameof(Pharmacy.PharmacyUserId) },
 
-                [CommandType.CreateWarehouse] = new[] { nameof(Warehouse.Name), nameof(Warehouse.PharmacyName) },
-                [CommandType.DeleteWarehouse] = new[] { nameof(Warehouse.Name) },
+                [CommandType.CreateWarehouse] = new[] { nameof(Warehouse.WarehouseUserId), nameof(Warehouse.PharmacyUserId), nameof(Warehouse.Name) },
+                [CommandType.DeleteWarehouse] = new[] { nameof(Warehouse.WarehouseUserId) },
 
-                [CommandType.CreateBatch] = new[] { nameof(Batch.Name), nameof(Batch.WarehouseName), nameof(Batch.ProductName), nameof(Batch.Number) },
-                [CommandType.DeleteBatch] = new[] { nameof(Batch.Name) },
+                [CommandType.CreateBatch] = new[] { nameof(Batch.BatchUserId), nameof(Batch.ProductUserId), nameof(Batch.WarehouseUserId), nameof(Batch.Number) },
+                [CommandType.DeleteBatch] = new[] { nameof(Batch.BatchUserId) },
 
-                [CommandType.ShowProducts] = new[] { "PharmacyName" },
+                [CommandType.ShowProducts] = new[] { nameof(Pharmacy.PharmacyUserId) },
             };
 
         public static CommandInfo ParseInputString(string input)
