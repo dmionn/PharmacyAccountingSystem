@@ -101,7 +101,11 @@
 
             void addNewParameter()
             {
-                paramValuesList.Add(new string(parameterValue.ToArray()).Trim());
+                if (parameterValue.Any() && !parameterValue.All(i => i == ' '))
+                {
+                    paramValuesList.Add(new string(parameterValue.ToArray()).Trim()); 
+                }
+
                 parameterValue.Clear();
             }
 

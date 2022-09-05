@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data.SQLite;
 
 namespace PharmacyAccountingSystem
 {
@@ -13,6 +8,17 @@ namespace PharmacyAccountingSystem
 
         public PharmacyOperationsProvider(SQLiteConnection connection) : base(connection)
         {
+        }
+
+        protected override Pharmacy PopulateRecord(SQLiteDataReader reader)
+        {
+            return new Pharmacy
+            {
+                Id = reader.GetInt32(0),
+                Name = reader.GetString(1),
+                Address = reader.GetString(2),
+                PhoneNumber = reader.GetString(3),
+            };
         }
 
         public bool AddPharmacy(Pharmacy pharmacy)
@@ -27,6 +33,12 @@ namespace PharmacyAccountingSystem
         {
             using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}DELETE FROM Pharmacies WHERE Name='{pharmacy.Name}';");
             return ExecuteCommand(command);
+        }
+
+        public Pharmacy? GetPharmacyByName(string name)
+        {
+            using var command = new SQLiteCommand($"{ENABLE_FOREIGN_KEYS}SELECT * FROM Pharmacies WHERE Name='{name}';");
+            return GetRecord(command);
         }
 
         protected override void HandleFailedCommand(Exception ex)

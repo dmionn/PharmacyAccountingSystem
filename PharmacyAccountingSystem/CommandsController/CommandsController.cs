@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PharmacyAccountingSystem
+﻿namespace PharmacyAccountingSystem
 {
     internal class CommandsController
     {
@@ -28,8 +22,20 @@ namespace PharmacyAccountingSystem
 
         public bool RunCommand(CommandInfo commandInfo) => _commandMethods[commandInfo.Command](commandInfo.Parameters);
 
-        private bool CreateProduct(Dictionary<string, string> parameters) => _databaseContext.AddProduct(new Product { Name = parameters[nameof(Product.Name)] });
-        private bool DeleteProduct(Dictionary<string, string> parameters) => _databaseContext.DeleteProduct(new Product { Name = parameters[nameof(Product.Name)] });
+        private bool CreateProduct(Dictionary<string, string> parameters) 
+        { 
+            return _databaseContext.AddProduct(new Product { Name = parameters[nameof(Product.Name)] }); 
+        }
+        private bool DeleteProduct(Dictionary<string, string> parameters)
+        {
+            if (_databaseContext.GetProductByName(parameters[nameof(Product.Name)]) == null)
+            {
+                MessagesLogger.ErrorMessage("Товара с данным наименованием не существует");
+                return false;
+            }
+            
+            return _databaseContext.DeleteProduct(new Product { Name = parameters[nameof(Product.Name)] });
+        }
 
         private bool CreatePharmacy(Dictionary<string, string> parameters)
         {
@@ -44,24 +50,45 @@ namespace PharmacyAccountingSystem
 
         private bool DeletePharmacy(Dictionary<string, string> parameters)
         {
-            return _databaseContext.AddPharmacy(
+            if (_databaseContext.GetPharmacyByName(parameters[nameof(Pharmacy.Name)]) == null)
+            {
+                MessagesLogger.ErrorMessage("Аптеки с данным наименованием не существует");
+                return false;
+            }
+
+            return _databaseContext.DeletePharmacy(
                 new Pharmacy
                 {
                     Name = parameters[nameof(Pharmacy.Name)],
                 });
         }
+
         private bool CreateWarehouse(Dictionary<string, string> parameters)
         {
+            var pharmacy = _databaseContext.GetPharmacyByName(parameters[nameof(Warehouse.PharmacyName)]);
+            if (pharmacy == null)
+            {
+                MessagesLogger.ErrorMessage("Аптеки с данным наименованием не существует");
+                return false;
+            }
+
             return _databaseContext.AddWarehouse(
                 new Warehouse
                 {
                     Name = parameters[nameof(Warehouse.Name)],
-                    PharmacyName = parameters[nameof(Warehouse.PharmacyName)]
+                    PharmacyName = parameters[nameof(Warehouse.PharmacyName)],
+                    PharmacyId = pharmacy.Id,
                 });
         }
 
         private bool DeleteWarehouse(Dictionary<string, string> parameters)
         {
+            if (_databaseContext.GetWarehouseByName(parameters[nameof(Warehouse.Name)]) == null)
+            {
+                MessagesLogger.ErrorMessage("Склада с данным наименованием не существует");
+                return false;
+            }
+
             return _databaseContext.DeleteWarehouse(
                 new Warehouse
                 {
@@ -77,18 +104,38 @@ namespace PharmacyAccountingSystem
                 return false;
             }
 
+            var product = _databaseContext.GetProductByName(parameters[nameof(Batch.ProductName)]);
+            if (product == null)
+            {
+                MessagesLogger.ErrorMessage("Товара с данным наименованием не существует");
+                return false;
+            }
+
+            var warehouse = _databaseContext.GetWarehouseByName(parameters[nameof(Batch.WarehouseName)]);
+            if (warehouse == null)
+            {
+                MessagesLogger.ErrorMessage("Склада с данным наименованием не существует");
+                return false;
+            }
+
             return _databaseContext.AddBatch(
                 new Batch
                 {
                     Name = parameters[nameof(Batch.Name)],
-                    WarehouseName = parameters[nameof(Batch.WarehouseName)],
-                    ProductName = parameters[nameof(Batch.ProductName)],
-                    Number = number
+                    Number = number,
+                    WarehouseId = warehouse.Id,
+                    ProductId = product.Id
                 });
         }
 
         private bool DeleteBatch(Dictionary<string, string> parameters)
         {
+            if (_databaseContext.GetBatchByName(parameters[nameof(Batch.Name)]) == null)
+            {
+                MessagesLogger.ErrorMessage("Партии с данным наименованием не существует");
+                return false;
+            }
+
             return _databaseContext.DeleteBatch(
                 new Batch
                 {
